@@ -1,13 +1,24 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? ''
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ''
+const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL ?? '').trim()
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? '').trim()
+
+function isValidSupabaseUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
 
 export const isSupabaseConfigured =
-  Boolean(supabaseUrl && supabaseAnonKey) &&
-  !supabaseUrl.includes('your_supabase')
+  isValidSupabaseUrl(supabaseUrl) &&
+  Boolean(supabaseAnonKey) &&
+  !supabaseUrl.includes('your_supabase') &&
+  !supabaseAnonKey.includes('your_supabase')
 
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
+  isValidSupabaseUrl(supabaseUrl) ? supabaseUrl : 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key'
 )
