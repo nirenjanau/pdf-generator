@@ -1,0 +1,1 @@
+export { DocumentNotes } from './DocumentSections'
